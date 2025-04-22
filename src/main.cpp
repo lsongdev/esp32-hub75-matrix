@@ -5,19 +5,25 @@
 #define ESP32_LED_BUILTIN 2
 #define PANEL_WIDTH 64
 #define PANEL_HEIGHT 64
-#define SCROLL_SPEED 50
 
 MatrixPanel_I2S_DMA *display = nullptr;
 U8G2_FOR_ADAFRUIT_GFX u8g2;
 
-const char *message = "欢迎使用LED矩阵显示屏，这是一个中文滚动显示的示例。";
-int16_t scrollPosition = PANEL_WIDTH;
+const char *message = "欢迎使用";
 
 void setup()
 {
-  HUB75_I2S_CFG mxconfig(64, 64, 1);
+  HUB75_I2S_CFG mxconfig(PANEL_WIDTH, PANEL_HEIGHT, 1);
   mxconfig.gpio.e = 18;
+  // BRG
+  // mxconfig.gpio.r1 = 27;
+  // mxconfig.gpio.r2 = 13;
+  // mxconfig.gpio.g1 = 25;
+  // mxconfig.gpio.g2 = 14;
+  // mxconfig.gpio.b1 = 26;
+  // mxconfig.gpio.b2 = 12;
   mxconfig.clkphase = false;
+  
   display = new MatrixPanel_I2S_DMA(mxconfig);
   display->begin();
   display->setBrightness8(50);
@@ -52,27 +58,27 @@ void setup()
   display->print("B");
   display->setTextColor(display->color444(15, 0, 8));
   display->println("*");
-
   delay(3000);
+  display->clearScreen();
+  display->setTextColor(display->color444(255, 0, 0));
 
   u8g2.begin(*display);
   u8g2.setFont(u8g2_font_wqy16_t_gb2312);
+  u8g2.setForegroundColor(display->color444(255, 0, 0));
+  u8g2.setCursor(1, 14);
+  u8g2.print(message);
+  u8g2.setForegroundColor(display->color444(0, 255, 0));
+  u8g2.setCursor(1, 30);
+  u8g2.print(message);
+  u8g2.setForegroundColor(display->color444(0, 0, 255));
+  u8g2.setCursor(1, 46);
+  u8g2.print(message);
+  u8g2.setForegroundColor(display->color444(255, 255, 0));
+  u8g2.setCursor(1, 62);
+  u8g2.print(message);
 }
 
 void loop()
 {
-  display->clearScreen();
-  int16_t textWidth = u8g2.getUTF8Width(message);
-  u8g2.setForegroundColor(display->color444(255, 0, 255));
-  u8g2.setCursor(scrollPosition, 32);
-  u8g2.print(message);
 
-  scrollPosition--;
-
-  if (scrollPosition < -textWidth)
-  {
-    scrollPosition = PANEL_WIDTH;
-  }
-
-  delay(40);
 }
