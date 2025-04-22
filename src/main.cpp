@@ -16,6 +16,8 @@ int16_t scrollPosition = PANEL_WIDTH;
 void setup()
 {
   HUB75_I2S_CFG mxconfig(64, 64, 1);
+  mxconfig.gpio.e = 18;
+  mxconfig.clkphase = false;
   display = new MatrixPanel_I2S_DMA(mxconfig);
   display->begin();
   display->setBrightness8(50);
@@ -62,7 +64,7 @@ void loop()
   display->clearScreen();
   int16_t textWidth = u8g2.getUTF8Width(message);
   u8g2.setForegroundColor(display->color444(255, 0, 255));
-  u8g2.setCursor(scrollPosition, 46);
+  u8g2.setCursor(scrollPosition, 32);
   u8g2.print(message);
 
   scrollPosition--;
